@@ -126,7 +126,7 @@ class UrlSpider(scrapy.Spider):
 
         yield {
             'product price': product_price,
-            'code': response.url[-39:],
+            'product_code': response.url[-39:],
             'image urls': image_urls,
             'product name': product_name,
             'campaigns details': campaigns_details,
