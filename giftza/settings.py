@@ -56,8 +56,7 @@ MONGO_DATABASE = 'mongo_database'
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-    'giftza.middlewares.CustomProxyMiddleware': 350,
-    # 'giftza.middlewares.ErrorRetryMiddleware': 360,
+    # 'giftza.middlewares.CustomProxyMiddleware': 350,
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400,
     # 'giftza.middlewares.GiftzaDownloaderMiddleware': 543,
 }
@@ -71,9 +70,8 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   # 'giftza.pipelines.GiftzaPipeline': 300,
-   'giftza.pipelines.MongoPipeline': 300,
-
+    # 'giftza.pipelines.GiftzaPipeline': 300,
+    'giftza.pipelines.MongoPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

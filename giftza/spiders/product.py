@@ -1,5 +1,6 @@
 import scrapy
 
+# filter
 tags = [
     'family-gift',
     'Relationship',
@@ -10,24 +11,24 @@ tags = [
 ]
 department = [
     'men',
-    # 'women',
-    # 'youth',
-    # 'assessories',
-    # 'housewares'
+    'women',
+    'youth',
+    'assessories',
+    'housewares'
 ]
 product = [
     'shirt',
-    # 'hoodie',
-    # 'hat',
-    # 'case',
-    # 'sweatshirt',
-    # 'longsleeve',
-    # 'tanktop',
-    # 'mug',
-    # 'poster',
-    # 'pillowcase',
-    # 'blanket',
-    # 'pillow'
+    'hoodie',
+    'hat',
+    'case',
+    'sweatshirt',
+    'longsleeve',
+    'tanktop',
+    'mug',
+    'poster',
+    'pillowcase',
+    'blanket',
+    'pillow'
 ]
 color = ['black',
          'grey',
@@ -51,6 +52,7 @@ sort = [
     '-price'
 ]
 
+# để tránh lặp lại product code
 set_code = set()
 
 
@@ -59,12 +61,7 @@ def url3(_tag, _department, _product):
     return "https://www.giftza.co/tags/{}/department/{}/product/{}".format(_tag, _department, _product)
 
 
-# cho gọn
-def url5(_tag, _sort, _page, _department, _product):
-    return "https://www.giftza.co/tags/{}/sort/{}/page/{}/department/{}/product/{}".format(_tag, _sort, _page,
-                                                                                           _department, _product)
-
-
+# from string to int
 def to_int(amount):
     try:
         amount = amount.replace(',', '')
@@ -86,6 +83,9 @@ class UrlSpider(scrapy.Spider):
                 yield scrapy.Request(url=url, callback=self.parse_url_menu, dont_filter=True)
 
     def parse_url_menu(self, response):
+        if not response.xpath('//a[@class="fs-xs color-blue"]/@href').get():
+            return scrapy.Request(url=response.url, callback=self.parse_url_menu, dont_filter=True)
+
         amount = response.xpath('//span[@class="color-primary fw-bold"]/text()').get()
         amount = to_int(amount)
 
@@ -102,7 +102,7 @@ class UrlSpider(scrapy.Spider):
 
     def parse_url_product(self, response):
         if not response.xpath('//a[@class="fs-xs color-blue"]/@href').get():
-            yield scrapy.Request(url=response.url, dont_filter=True)
+            return scrapy.Request(url=response.url, callback=self.parse_url_product, dont_filter=True)
 
         urls = response.xpath(
             '//div[@class="w-1/2 lg:w-1/3 p-p5 lg:p-1"]/div/a[@class="d-ib br overflow-hidden bc-grey-300 '
@@ -114,10 +114,9 @@ class UrlSpider(scrapy.Spider):
                 set_code.add(code)
                 yield scrapy.Request(url='https://www.giftza.co' + url, callback=self.parse_product, dont_filter=True)
 
-    @staticmethod
-    def parse_product(response):
+    def parse_product(self, response):
         if not response.xpath('//a[@class="fs-xs color-blue"]/@href').get():
-            yield scrapy.Request(url=response.url, dont_filter=True)
+            return scrapy.Request(url=response.url, callback=self.parse_product, dont_filter=True)
 
         product_price = response.xpath('//span[@class="fs-xl color-red fw-bold lg:fs-2xl"]/span/text()').get()
         image_urls = response.xpath('//div[@class="p-a pin-t pin-l w-full h-full"]/img/@src').getall()
