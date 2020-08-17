@@ -290,6 +290,7 @@ class CustomProxyMiddleware(object):
             "http://185.200.36.120:8080",
             "http://157.100.9.219:999"
         ]
+
         # # foobla ip
         # self.ip_addresses = [
         #     'http://173.208.43.61:3128',

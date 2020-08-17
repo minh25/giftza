@@ -13,7 +13,8 @@ SPIDER_MODULES = ['giftza.spiders']
 NEWSPIDER_MODULE = 'giftza.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = 'giftza (+http://www.yourdomain.com)'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 ' \
+             'Safari/537.36 '
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -56,7 +57,7 @@ MONGO_DATABASE = 'mongo_database'
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-    # 'giftza.middlewares.CustomProxyMiddleware': 350,
+    'giftza.middlewares.CustomProxyMiddleware': 350,
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400,
     # 'giftza.middlewares.GiftzaDownloaderMiddleware': 543,
 }

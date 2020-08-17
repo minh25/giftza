@@ -30,21 +30,23 @@ product = [
     'blanket',
     'pillow'
 ]
-color = ['black',
-         'grey',
-         'blue',
-         'white',
-         'red',
-         'green',
-         'blue-dark',
-         'pink',
-         'brown',
-         'purple',
-         'green-dark',
-         'orange',
-         'gold',
-         'yellow',
-         'maroon']
+color = [
+    'black',
+    'grey',
+    'blue',
+    'white',
+    'red',
+    'green',
+    'blue-dark',
+    'pink',
+    'brown',
+    'purple',
+    'green-dark',
+    'orange',
+    'gold',
+    'yellow',
+    'maroon'
+]
 sort = [
     '-popularity',
     '-createdAt',
@@ -61,14 +63,18 @@ def url3(_tag, _department, _product):
     return "https://www.giftza.co/tags/{}/department/{}/product/{}".format(_tag, _department, _product)
 
 
-# from string to int
-def to_int(amount):
+def amount_of_item(response):
     try:
-        amount = amount.replace(',', '')
-        amount = int(amount)
-    except:
-        amount = int(0)
-    return amount
+        str_item = response.xpath('//*[@id="main-content"]/div/div/div[2]/div/div[2]/div[1]/div/div[1]/div[2]/span/text()').get()
+        if str_item == '1 item':
+            return int(1)
+        if str_item == '':
+            return int(-1)
+        str_item = str_item.replace(',', '')
+        cnt_item = int(str_item[:-6])
+        return cnt_item
+    except Exception as error:
+        return int(-1)
 
 
 class UrlSpider(scrapy.Spider):
@@ -83,11 +89,9 @@ class UrlSpider(scrapy.Spider):
                 yield scrapy.Request(url=url, callback=self.parse_url_menu, dont_filter=True)
 
     def parse_url_menu(self, response):
-        if not response.xpath('//a[@class="fs-xs color-blue"]/@href').get():
-            return scrapy.Request(url=response.url, callback=self.parse_url_menu, dont_filter=True)
-
-        amount = response.xpath('//span[@class="color-primary fw-bold"]/text()').get()
-        amount = to_int(amount)
+        amount = amount_of_item(response)
+        if amount == -1:
+            yield scrapy.Request(url=response.url, callback=self.parse_url_menu, dont_filter=True)
 
         if amount > 0:
             page = int((amount + 35) / 36)
@@ -96,32 +100,49 @@ class UrlSpider(scrapy.Spider):
                     for _sort in sort:
                         url = response.url + "/page/{}/sort/{}".format(_page, _sort)
                         yield scrapy.Request(url=url, callback=self.parse_url_product, dont_filter=True)
+                        # yield {
+                        #     "url": url,
+                        # }
                 else:
                     url = response.url + "/page/{}".format(_page)
                     yield scrapy.Request(url=url, callback=self.parse_url_product, dont_filter=True)
+                    # yield {
+                    #     "url": url,
+                    # }
 
     def parse_url_product(self, response):
-        if not response.xpath('//a[@class="fs-xs color-blue"]/@href').get():
-            return scrapy.Request(url=response.url, callback=self.parse_url_product, dont_filter=True)
+        try:
+            urls = response.xpath('//*[@id="main-content"]/div/div/div[2]/div[1]/div[2]/div[3]/div/div[1]/div/div/div/a[1]/@href').getall()
+            for url in urls:
+                code = url[-39:]
+                if code not in set_code:
+                    set_code.add(code)
+                    yield scrapy.Request(url='https://www.giftza.co' + url, callback=self.parse_product, dont_filter=True)
+                    # yield {
+                    #     "url": url,
+                    # }
+            if len(urls) == 0:
+                yield scrapy.Request(url=response.url, callback=self.parse_url_product, dont_filter=True)
+        except Exception as error:
+            yield scrapy.Request(url=response.url, callback=self.parse_url_product, dont_filter=True)
 
-        urls = response.xpath(
-            '//div[@class="w-1/2 lg:w-1/3 p-p5 lg:p-1"]/div/a[@class="d-ib br overflow-hidden bc-grey-300 '
-            'cursor-pointer bw-1 bc-white:hover shadow-2:hover d-n lg:d-ib w-full bc-white"]/@href').getall()
-
-        for url in urls:
-            code = url[-39:]
-            if code not in set_code:
-                set_code.add(code)
-                yield scrapy.Request(url='https://www.giftza.co' + url, callback=self.parse_product, dont_filter=True)
 
     def parse_product(self, response):
-        if not response.xpath('//a[@class="fs-xs color-blue"]/@href').get():
-            return scrapy.Request(url=response.url, callback=self.parse_product, dont_filter=True)
+        # if not response.xpath('//a[@class="fs-xs color-blue"]/@href').get():
+        #     return scrapy.Request(url=response.url, callback=self.parse_product, dont_filter=True)
 
-        product_price = response.xpath('//span[@class="fs-xl color-red fw-bold lg:fs-2xl"]/span/text()').get()
-        image_urls = response.xpath('//div[@class="p-a pin-t pin-l w-full h-full"]/img/@src').getall()
-        product_name = response.xpath('//h1[@class="fs-md lg:fs-lg"]/span/text()').get()
-        campaigns_details = response.xpath('//div[@class="px-1 pb-1 lg:px-0 bgc-white"]/div/div/text()').getall()
+        try:
+            product_price = response.xpath('//span[@class="fs-xl color-red fw-bold lg:fs-2xl"]/span/text()').get()
+            image_urls = response.xpath('//div[@class="p-a pin-t pin-l w-full h-full"]/img/@src').getall()
+            product_name = response.xpath('//h1[@class="fs-md lg:fs-lg"]/span/text()').get()
+            campaigns_details = response.xpath('//div[@class="px-1 pb-1 lg:px-0 bgc-white"]/div/div/text()').getall()
+
+            if len(image_urls) == 0:
+                yield scrapy.Request(url=response.url, callback=self.parse_product, dont_filter=True)
+                return
+        except Exception as error:
+            yield scrapy.Request(url=response.url, callback=self.parse_product, dont_filter=True)
+            return
 
         yield {
             'product price': product_price,
