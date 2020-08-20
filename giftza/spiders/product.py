@@ -64,6 +64,12 @@ def url3(_tag, _department, _product):
 
 
 def amount_of_item(response):
+    """
+    :param response:
+    :return:
+    return amount of product
+    return -1, if can't find amount in menu pages or get error
+    """
     try:
         str_item = response.xpath('//*[@id="main-content"]/div/div/div[2]/div/div[2]/div[1]/div/div[1]/div[2]/span/text()').get()
         if str_item == '1 item':
@@ -82,6 +88,9 @@ class UrlSpider(scrapy.Spider):
     allowed_domains = ['www.giftza.co']
 
     def start_requests(self):
+        """
+        yield menu pages with _department and _product
+        """
         _tag = tags[5]
         for _department in department:
             for _product in product:
@@ -89,6 +98,12 @@ class UrlSpider(scrapy.Spider):
                 yield scrapy.Request(url=url, callback=self.parse_url_menu, dont_filter=True)
 
     def parse_url_menu(self, response):
+        """
+        with _department-and-_product-menu pages,
+        yield menu pages
+        if amount of product > 900, add _sort and _page (1->25) filter
+        if amount of product <= 900, add _page (depending amount of product) filter
+        """
         amount = amount_of_item(response)
         if amount == -1:
             yield scrapy.Request(url=response.url, callback=self.parse_url_menu, dont_filter=True)
@@ -111,6 +126,9 @@ class UrlSpider(scrapy.Spider):
                     # }
 
     def parse_url_product(self, response):
+        """
+        yield product
+        """
         try:
             urls = response.xpath('//*[@id="main-content"]/div/div/div[2]/div[1]/div[2]/div[3]/div/div[1]/div/div/div/a[1]/@href').getall()
             for url in urls:
@@ -128,9 +146,9 @@ class UrlSpider(scrapy.Spider):
 
 
     def parse_product(self, response):
-        # if not response.xpath('//a[@class="fs-xs color-blue"]/@href').get():
-        #     return scrapy.Request(url=response.url, callback=self.parse_product, dont_filter=True)
-
+        """
+        yield details of product
+        """
         try:
             product_price = response.xpath('//span[@class="fs-xl color-red fw-bold lg:fs-2xl"]/span/text()').get()
             image_urls = response.xpath('//div[@class="p-a pin-t pin-l w-full h-full"]/img/@src').getall()
