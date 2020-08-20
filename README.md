@@ -8,3 +8,7 @@ in middlewares.py
 and
 
 > comment "# test ip"
+
+connect to MongoDB Compass:
+
+> mongodb+srv://giftza:giftza@cluster0.qquas.mongodb.net/test
