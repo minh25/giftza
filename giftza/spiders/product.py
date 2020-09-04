@@ -114,16 +114,16 @@ class UrlSpider(scrapy.Spider):
                 if amount > 900:
                     for _sort in sort:
                         url = response.url + "/page/{}/sort/{}".format(_page, _sort)
-                        yield scrapy.Request(url=url, callback=self.parse_url_product, dont_filter=True)
-                        # yield {
-                        #     "url": url,
-                        # }
+                        # yield scrapy.Request(url=url, callback=self.parse_url_product, dont_filter=True)
+                        yield {
+                            "url": url,
+                        }
                 else:
                     url = response.url + "/page/{}".format(_page)
-                    yield scrapy.Request(url=url, callback=self.parse_url_product, dont_filter=True)
-                    # yield {
-                    #     "url": url,
-                    # }
+                    # yield scrapy.Request(url=url, callback=self.parse_url_product, dont_filter=True)
+                    yield {
+                        "url": url,
+                    }
 
     def parse_url_product(self, response):
         """
@@ -135,10 +135,10 @@ class UrlSpider(scrapy.Spider):
                 code = url[-39:]
                 if code not in set_code:
                     set_code.add(code)
-                    yield scrapy.Request(url='https://www.giftza.co' + url, callback=self.parse_product, dont_filter=True)
-                    # yield {
-                    #     "url": url,
-                    # }
+                    # yield scrapy.Request(url='https://www.giftza.co' + url, callback=self.parse_product, dont_filter=True)
+                    yield {
+                        "url": url,
+                    }
             if len(urls) == 0:
                 yield scrapy.Request(url=response.url, callback=self.parse_url_product, dont_filter=True)
         except Exception as error:
