@@ -20,11 +20,11 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 10
 
 # Enable and configure MongoDB
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html#topics-item-pipeline
-MONGO_URI = 'mongodb+srv://giftza:giftza@cluster0.qquas.mongodb.net/<dbname>?retryWrites=true&w=majority'
+MONGO_URI = "mongodb+srv://giftza:giftza@cluster0.qquas.mongodb.net/<dbname>?retryWrites=true&w=majority"
 MONGO_DATABASE = 'mongo_database'
 
 # Configure a delay for requests for the same website (default: 0)
@@ -47,27 +47,27 @@ DEFAULT_REQUEST_HEADERS = {
     "Accept-Language": "en-US,en;q=0.9,vi;q=0.8",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,"
               "application/signed-exchange;v=b3;q=0.9",
-    "Connection": "keep-alive",
-    "Host": "www.giftza.co",
-    "Referer": "https://www.google.com/",
-    "Sec-Fetch-Dest": "document",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-Site": "none",
-    "Sec-Fetch-User": "?1",
     "Upgrade-Insecure-Requests": 1,
 }
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-# SPIDER_MIDDLEWARES = {
-#    'giftza.middlewares.GiftzaSpiderMiddleware': 543,
-# }
+SPIDER_MIDDLEWARES = {
+    #    'giftza.middlewares.GiftzaSpiderMiddleware': 543,
+    #    'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': 300,
+    #    'scrapy.spidermiddlewares.offsite.OffsiteMiddleware': None,
+}
+
+HTTPERROR_ALLOWED_CODES = [400]
+
+# consist of proxy each line
+PROXY_FILE_NAME = "proxy.txt"
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
-    # 'giftza.middlewares.CustomProxyMiddleware': 350,
+    'giftza.middlewares.CustomProxyMiddleware': 250,
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400,
     # 'giftza.middlewares.GiftzaDownloaderMiddleware': 543,
 }
@@ -80,10 +80,12 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#     # 'giftza.pipelines.GiftzaPipeline': 300,
-#     'giftza.pipelines.MongoPipeline': 300,
-# }
+ITEM_PIPELINES = {
+    # 'giftza.pipelines.GiftzaPipeline': 300,
+    # 'giftza.pipelines.MongoPipeline': 300,
+    # 'giftza.pipelines.JsonWriterPipeline': 310,
+    'giftza.pipelines.CsvWriterPipeline': 320,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
