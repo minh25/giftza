@@ -24,7 +24,11 @@ CONCURRENT_REQUESTS = 10
 
 # Enable and configure MongoDB
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html#topics-item-pipeline
+
+# "mongodb+srv://...majority"
 MONGO_URI = "mongodb+srv://giftza:giftza@cluster0.qquas.mongodb.net/<dbname>?retryWrites=true&w=majority"
+
+# name of database
 MONGO_DATABASE = 'mongo_database'
 
 # Configure a delay for requests for the same website (default: 0)

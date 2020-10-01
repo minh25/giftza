@@ -1,7 +1,7 @@
 import scrapy
 import json
 
-# filter
+# category
 tags = [
     'family-gift',
     'Relationship',
