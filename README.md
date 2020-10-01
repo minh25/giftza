@@ -4,8 +4,6 @@
 
 Giftza is a project for crawling the data from [giftza.co](https://www.giftza.co/). 
 
-* data of products: code, url, description, name, price, url of main image 
-
 Giftza is written base on Scrapy.
 
 # Requirements
@@ -26,6 +24,11 @@ Clone the project to your device, then:
     $ pip install -r requirements.txt
 
 # Feature
+
+* Get data of products in [giftza.co](https://www.giftza.co/)
+    * Data of products: code, url, description, name, price, url of main image
+* Customize proxy, prevent blocked status
+* Connect to MongoDB
 
 # Overview
 
